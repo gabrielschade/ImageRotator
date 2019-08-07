@@ -1,50 +1,68 @@
-var imageLoader = document.getElementById('imageLoader');
-    imageLoader.addEventListener('change', handleImage, false);
-var canvas = document.getElementById('imageCanvas');
-var ctx = canvas.getContext('2d');
-var rotate = document.getElementById('rotateImage');
-    rotate.addEventListener('click', rotateImage);
+(function () {
+    init();
+})();
 
-var image = {
-    width:0,
-    height:0,
-    originalHeight:0,
-    originalWidth:0
+let image = { height: 0, width: 0 };
+let rotator = new Rotator();
+
+function init() {
+    document.getElementById('imageLoader').addEventListener('change', handleImage, false);
+    document.getElementById('rotateImage').addEventListener('click', rotateImage);
+    document.getElementById('angleDegrees').addEventListener('blur', calculateRadians);
+    document.getElementById('angle').addEventListener('blur', clearDegrees);
 }
-function handleImage(e){
-    var reader = new FileReader();
-    reader.onload = function(event){
-        var img = new Image();
-        img.onload = function(){
-            canvas.width = img.width;
-            canvas.height = img.height;
-            ctx.drawImage(img,0,0);
 
-            image.height = img.height;
-            image.width = img.width;
-            image.originalHeight = img.height;
-            image.originalWidth = img.width;
+function handleImage(e) {
+    let canvas = document.getElementById('imageCanvas');
+    let context = canvas.getContext('2d');
+    let fileReader = new FileReader();
+    fileReader.onload = function (event) {
+        let newImage = new Image();
+        newImage.onload = function () {
+            canvas.width = newImage.width;
+            canvas.height = newImage.height;
+            context.drawImage(newImage, 0, 0);
+
+            image.height = newImage.height;
+            image.width = newImage.width;
         }
-        img.src = event.target.result;
+        newImage.src = event.target.result;
     }
-    reader.readAsDataURL(e.target.files[0]);     
+    fileReader.readAsDataURL(e.target.files[0]);
 }
 
-function rotateImage(){
-    let rotation = parseInt(document.getElementById("rotate").value);
-    let currentImage = ctx.getImageData(0, 0, image.width, image.height);
-    
-    let rotator = new Rotator();
-    let result = rotator.rotate(currentImage, rotation *  (Math.PI / 180));
-    const newimageData = ctx.createImageData(result.width, result.height);
-    
-    for(let i=0;i<newimageData.data.length;i++)
+function calculateRadians(){
+    let angleDegrees = parseInt(document.getElementById("angleDegrees").value);
+    let angle = parseInt(document.getElementById("angle").value);
+    let calculated = rotator.degreesToRadian(angleDegrees);
+    if(angleDegrees < 0 || calculated == angle) return;
+
+    document.getElementById("angle").value = calculated;
+    clearDegrees();
+}
+
+function clearDegrees(){
+    document.getElementById("angleDegrees").value = '';
+}
+
+
+
+function rotateImage() {
+    let canvas = document.getElementById('imageCanvas');
+    let context = canvas.getContext('2d');
+    let resultCanvas = document.getElementById('resultImageCanvas');
+    let resultContext = resultCanvas.getContext('2d');
+    let angle = parseFloat(document.getElementById("angle").value);
+
+    let currentImage = context.getImageData(0, 0, image.width, image.height);
+    let result = rotator.rotate(currentImage, angle);
+    const newimageData = resultContext.createImageData(result.width, result.height);
+
+    for (let i = 0; i < newimageData.data.length; i++)
         newimageData.data[i] = result.data[i];
 
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    canvas.width = newimageData.width;
-    canvas.height = newimageData.height;
-    image.height = newimageData.height;
-    image.width = newimageData.width;
-    ctx.putImageData(newimageData, 0, 0);
+    resultCanvas.width = newimageData.width;
+    resultCanvas.height = newimageData.height;
+
+    resultContext.putImageData(newimageData, 0, 0);
 }

@@ -1,0 +1,13 @@
+nav ul a,
+nav .brand-logo,
+.sidenav-trigger {
+    color: #444;
+  }
+
+.canvas-container{
+    display:flex;
+}
+
+canvas{
+    margin:0 auto;
+}

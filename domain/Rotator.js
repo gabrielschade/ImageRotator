@@ -1,4 +1,5 @@
- class Rotator {
+class Rotator {
+
     /** @description Rotates the image around its centre, to angle radius clockwise parameter.  
     * @param {ImageData} image The image to rotate.  
     * @param {number} angle The angle (radians) to clockwise rotation about the centre of the image.  
@@ -10,13 +11,13 @@
         let [newMatrix, hi, wi] = this.scaleMatrix(matrix, angle);
         let rotatedMatrix = this.rotateMatrix(newMatrix, hi, wi, angle);
         let antialisingMatrix = this.antialising(rotatedMatrix);
-        
+
         const newimageData = {
-            width: antialisingMatrix.length, 
+            width: antialisingMatrix.length,
             height: antialisingMatrix[0].length,
-            data:[]
+            data: []
         };
- 
+
         let dataArray = this.toArray(antialisingMatrix);
         for (let i = 0; i < dataArray.length; i++) {
             newimageData.data[i] = dataArray[i];
@@ -25,20 +26,24 @@
         return newimageData;
     }
 
-    scaleMatrix(matrix, angle){
+    degreesToRadian(angle) {
+        return angle * (Math.PI / 180);
+    }
+
+    scaleMatrix(matrix, angle) {
         let height = matrix.length;
         let width = matrix[0].length;
-        let [h,w] = this.getImageSize({width:width, height:height},angle);
-        let hi = parseInt((h-height)/2);
-        let wi = parseInt((w-width)/2);
-        let newMatrix = Array(h).fill({r:0,g:0,b:0,a:0}).map(()=>Array(w).fill({r:0,g:0,b:0,a:0}));
-        for(let i=hi; i<height+hi;i++){
-          for(let j=wi; j<width+wi;j++){
-             newMatrix[i][j] = matrix[i-hi][j-wi];
-          }
+        let [h, w] = this.getImageSize({ width: width, height: height }, angle);
+        let hi = parseInt((h - height) / 2);
+        let wi = parseInt((w - width) / 2);
+        let newMatrix = Array(h).fill({ r: 0, g: 0, b: 0, a: 0 }).map(() => Array(w).fill({ r: 0, g: 0, b: 0, a: 0 }));
+        for (let i = hi; i < height + hi; i++) {
+            for (let j = wi; j < width + wi; j++) {
+                newMatrix[i][j] = matrix[i - hi][j - wi];
+            }
         }
-        return [newMatrix,hi,wi];
-      }
+        return [newMatrix, hi, wi];
+    }
 
     createSquareImageMatrix(image) {
         var data = image.data;
@@ -76,6 +81,9 @@
 
 
     getImageSize(image, angle) {
+        while (angle > 1.5708) {
+            angle -= 1.5708;
+        }
         let width = image.width;
         let height = image.height;
         let cos = Math.cos(angle);
@@ -153,16 +161,16 @@
     }
 
     rotateIJ(cx, cy, x, y, angle) {
-        return this.rotateRadian(cx,cy,x,y, angle);
-      }
-      
-      rotateRadian(cx, cy, x, y, radians) {
+        return this.rotateRadian(cx, cy, x, y, angle);
+    }
+
+    rotateRadian(cx, cy, x, y, radians) {
         let cos = Math.cos(radians),
             sin = Math.sin(radians),
             nx = (cos * (x - cx)) + (sin * (y - cy)) + cx,
             ny = (cos * (y - cy)) - (sin * (x - cx)) + cy;
         return [Math.abs(Math.round(nx)), Math.abs(Math.round(ny))];
-      }
+    }
 
     toArray(matrix) {
         let array = [];
