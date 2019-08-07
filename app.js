@@ -11,7 +11,9 @@ app.use('/api', rotateRouter);
 app.get('/',function(request,response) {
     response.sendFile( path.join(__dirname+'/application/views/index.html'));
 });
-app.use('/static', express.static('./domain'));
+app.use('/domain', express.static('./domain'));
+app.use('/static', express.static('./application/'));
+
 app.listen(port, () => {
     console.log(`running on port: ${port}`); 
 });

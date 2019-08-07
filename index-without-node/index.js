@@ -48,21 +48,27 @@ function clearDegrees(){
 
 
 function rotateImage() {
-    let canvas = document.getElementById('imageCanvas');
-    let context = canvas.getContext('2d');
-    let resultCanvas = document.getElementById('resultImageCanvas');
-    let resultContext = resultCanvas.getContext('2d');
-    let angle = parseFloat(document.getElementById("angle").value);
-
-    let currentImage = context.getImageData(0, 0, image.width, image.height);
-    let result = rotator.rotate(currentImage, angle);
-    const newimageData = resultContext.createImageData(result.width, result.height);
-
-    for (let i = 0; i < newimageData.data.length; i++)
-        newimageData.data[i] = result.data[i];
-
-    resultCanvas.width = newimageData.width;
-    resultCanvas.height = newimageData.height;
-
-    resultContext.putImageData(newimageData, 0, 0);
+    document.getElementById('loader').classList.remove('hide');
+    let timeOut = setTimeout(function(){
+        let canvas = document.getElementById('imageCanvas');
+        let context = canvas.getContext('2d');
+        let resultCanvas = document.getElementById('resultImageCanvas');
+        let resultContext = resultCanvas.getContext('2d');
+        let angle = parseFloat(document.getElementById("angle").value);
+    
+        let currentImage = context.getImageData(0, 0, image.width, image.height);
+        let result = rotator.rotate(currentImage, angle);
+        const newimageData = resultContext.createImageData(result.width, result.height);
+    
+        for (let i = 0; i < newimageData.data.length; i++)
+            newimageData.data[i] = result.data[i];
+    
+        resultCanvas.width = newimageData.width;
+        resultCanvas.height = newimageData.height;
+    
+        resultContext.putImageData(newimageData, 0, 0);
+        document.getElementById('loader').classList.add('hide');
+        clearTimeout(timeOut);
+    }, 100);
+    
 }
