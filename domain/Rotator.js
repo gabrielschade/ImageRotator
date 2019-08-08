@@ -166,7 +166,9 @@ class Rotator {
 
         let squareMatrix = this.createPixelImageMatrix(image);
         let [scaledMatrix, widthIncreased, heightIncreased] = this.scaleMatrix(squareMatrix, angle);
+        
         let rotatedMatrix = this.rotateMatrix(scaledMatrix, widthIncreased, heightIncreased, angle);
+        
         let antialiasedMatrix = this.antialiasing(rotatedMatrix);
 
         return this.createNewImageArray(antialiasedMatrix);
@@ -182,18 +184,21 @@ class Rotator {
         let width = image.width;
         let originalHeight = height;
         let originalWidth = width;
-
+        let heightIncreased = 0;
+        let widthIncreased = 0;
         if (height > width) {
             width = height;
         } else {
             height = width;
         }
+        heightIncreased = parseInt((height - originalHeight)/2);
+        widthIncreased = parseInt((width - originalWidth)/2);
 
         let matrix = Array(height).fill().map(() => Array(width).fill());
         let index = 0;
-        for (let row = 0; row < height; row++) {
-            for (let column = 0; column < width; column++) {
-                if (row >= originalHeight || column >= originalWidth) {
+        for (let row = heightIncreased; row < height; row++) {
+            for (let column = widthIncreased; column < width; column++) {
+                if(index >= image.data.length){
                     matrix[row][column] = Pixel.transparentPixel();
                 }
                 else {
@@ -242,8 +247,8 @@ class Rotator {
         let height = matrix.length;
         let width = matrix[0].length;
 
-        let rotatedMatrix = Array(height + heightIncreased)
-            .fill(Pixel.transparentPixel()).map(() => Array(width + widthIncreased)
+        let rotatedMatrix = Array(height)
+            .fill(Pixel.transparentPixel()).map(() => Array(width)
             .fill(Pixel.transparentPixel()));
 
         let centralRow = parseInt(height / 2);

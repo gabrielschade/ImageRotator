@@ -70,7 +70,7 @@ function rotateImage() {
             resultCanvas.height = newimageData.height;
 
             resultContext.putImageData(newimageData, 0, 0);
-        } catch{
+        } catch(error){
             M.toast({ html: 'Oops, something went wrong. Please check your inputs.' });
             document.getElementById('loader').classList.add('hide');
             clearTimeout(timeOut);
