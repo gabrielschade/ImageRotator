@@ -79,7 +79,7 @@ class Pixel {
      * @param {Pixel[][]} matrix Pixel matrix that represents the image
      * @param {Number} row Row index (positive integer) of the pixel to get the neighbors
      * @param {Number} column Column index (positive integer) of the adjacent pixel to get the neighbors
-     * @returns Returns all valid (not transparent nor out of bounds) neighbors for the antialising process
+     * @returns Returns all valid (not transparent nor out of bounds) neighbors for the antialiasing process
      */
     static getNeighbors(matrix, row, column) {
         let neighbors = [];
@@ -121,16 +121,16 @@ class Pixel {
     /**
      * @description Create a new pixel based on the average of the neighbors pixels.
      * @param {Pixel[][]} matrix Pixel matrix that represents the image
-     * @param {Number} row Row index (positive integer) of the pixel to apply the antialising process
-     * @param {Number} column Column index (positive integer)of the pixel to apply the antialising process
+     * @param {Number} row Row index (positive integer) of the pixel to apply the antialiasing process
+     * @param {Number} column Column index (positive integer)of the pixel to apply the antialiasing process
      * @returns a new Pixel based on its neighbors
      * @throws {RangeError} Throws RangeError when the row or column are invalid matrix indexes.
      */
-    static antialising(matrix, row, column) {
+    static antialiasing(matrix, row, column) {
         if (Pixel.isOutOfBounds(matrix,row, column)) throw new RangeError();
 
         let pixel = matrix[row][column];
-        let neighbors = Pixel.getNeighbors();
+        let neighbors = Pixel.getNeighbors(matrix,row,column);
 
         if (neighbors.length > 3) {
             pixel = Pixel.getAverageRGB(neighbors);
@@ -163,9 +163,9 @@ class Rotator {
         let squareMatrix = this.createPixelImageMatrix(image);
         let [scaledMatrix, widthIncreased, heightIncreased] = this.scaleMatrix(squareMatrix, angle);
         let rotatedMatrix = this.rotateMatrix(scaledMatrix, widthIncreased, heightIncreased, angle);
-        let antialisedMatrix = this.antialising(rotatedMatrix);
+        let antialiasedMatrix = this.antialiasing(rotatedMatrix);
 
-        return this.createNewImageArray(antialisedMatrix);
+        return this.createNewImageArray(antialiasedMatrix);
     }
 
     /**
@@ -260,14 +260,14 @@ class Rotator {
     /**
      * @description Calculate new values of each transparent Pixel surroundend with 4 or more valid pixels in the Image matrix
      * @param {Pixel[][]} matrix Image Pixel matrix to scale to according the angle
-     * @returns Returns a new Pixel image after the antialising process.
+     * @returns Returns a new Pixel image after the antialiasing process.
      */
-    antialising(matrix) {
+    antialiasing(matrix) {
         for (let row = 0; row < matrix.length; row++) {
             for (let column = 0; column < matrix[0].length; column++) {
                 let pixel = matrix[row][column];
                 if (Pixel.isTransparentOrInvalid(pixel)) {
-                    pixel = Pixel.antialising(matrix, row, column);
+                    pixel = Pixel.antialiasing(matrix, row, column);
                 }
                 matrix[row][column] = pixel;
             }
