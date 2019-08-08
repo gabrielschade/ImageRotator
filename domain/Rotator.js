@@ -325,7 +325,9 @@ class Rotator {
             || !image.data
             || !image.height
             || !image.width
-            || typeof angle !== "number";
+            || typeof angle !== "number"
+            || angle < 0
+            || angle > 360;
     }
 
     /**
