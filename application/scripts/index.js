@@ -31,17 +31,17 @@ function handleImage(e) {
     fileReader.readAsDataURL(e.target.files[0]);
 }
 
-function calculateRadians(){
+function calculateRadians() {
     let angleDegrees = parseInt(document.getElementById("angleDegrees").value);
     let angle = parseInt(document.getElementById("angle").value);
     let calculated = rotator.degreesToRadian(angleDegrees);
-    if(angleDegrees < 0 || calculated == angle) return;
+    if (angleDegrees < 0 || calculated == angle) return;
 
     document.getElementById("angle").value = calculated;
     clearDegrees();
 }
 
-function clearDegrees(){
+function clearDegrees() {
     document.getElementById("angleDegrees").value = '';
 }
 
@@ -49,24 +49,34 @@ function clearDegrees(){
 
 function rotateImage() {
     document.getElementById('loader').classList.remove('hide');
-    let timeOut = setTimeout(function(){
+    let timeOut = setTimeout(function () {
         let canvas = document.getElementById('imageCanvas');
         let context = canvas.getContext('2d');
         let resultCanvas = document.getElementById('resultImageCanvas');
         let resultContext = resultCanvas.getContext('2d');
         let angle = parseFloat(document.getElementById("angle").value);
-    
-        let currentImage = context.getImageData(0, 0, image.width, image.height);
-        let result = rotator.rotate(currentImage, angle);
-        const newimageData = resultContext.createImageData(result.width, result.height);
-    
-        for (let i = 0; i < newimageData.data.length; i++)
-            newimageData.data[i] = result.data[i];
-    
-        resultCanvas.width = newimageData.width;
-        resultCanvas.height = newimageData.height;
-    
-        resultContext.putImageData(newimageData, 0, 0);
+        let currentImage = null;
+        try {
+            currentImage = context.getImageData(0, 0, image.width, image.height);
+            let result = currentImage;
+            result = rotator.rotate(currentImage, angle);
+
+            const newimageData = resultContext.createImageData(result.width, result.height);
+
+            for (let i = 0; i < newimageData.data.length; i++)
+                newimageData.data[i] = result.data[i];
+
+            resultCanvas.width = newimageData.width;
+            resultCanvas.height = newimageData.height;
+
+            resultContext.putImageData(newimageData, 0, 0);
+        } catch{
+            M.toast({ html: 'Oops, something went wrong. Please check your inputs.' });
+            document.getElementById('loader').classList.add('hide');
+            clearTimeout(timeOut);
+        }
+
+
         document.getElementById('loader').classList.add('hide');
         clearTimeout(timeOut);
     }, 100);
@@ -98,5 +108,5 @@ function rotateImage() {
     //     image.height = newimageData.height;
     //     image.width = newimageData.width;
     //     ctx.putImageData(newimageData, 0, 0);
-        
+
     //     })();

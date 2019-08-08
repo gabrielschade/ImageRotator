@@ -144,6 +144,10 @@ class Pixel {
  * @description Constant that represents 90 degrees in radians.
  */
 const NINETY_DEGREES_IN_RADIAN = 1.5708;
+/**
+ * @description Constant that represents 360 degrees in radians.
+ */
+const THREE_SIXTY_DEGREES_IN_RADIAN= 6.28319;
 
 /**
  * @description Class to encapsulate the logic to rotate an image.
@@ -327,7 +331,7 @@ class Rotator {
             || !image.width
             || typeof angle !== "number"
             || angle < 0
-            || angle > 360;
+            || angle > THREE_SIXTY_DEGREES_IN_RADIAN;
     }
 
     /**
